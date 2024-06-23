@@ -4,12 +4,15 @@ FROM ubuntu:latest AS build
 # Install dependencies
 RUN apt-get update && apt-get install -y \
     openjdk-17-jdk \
-    curl \
-    && apt-get clean
+    wget \
+    unzip
 
-# Install Gradle
-RUN curl -s "https://get.sdkman.io" | bash
-RUN bash -c "source $HOME/.sdkman/bin/sdkman-init.sh && sdk install gradle"
+# Install Gradle manually
+ARG GRADLE_VERSION=7.6
+RUN wget https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip \
+    && unzip gradle-${GRADLE_VERSION}-bin.zip -d /opt \
+    && rm gradle-${GRADLE_VERSION}-bin.zip
+ENV PATH="/opt/gradle-${GRADLE_VERSION}/bin:${PATH}"
 
 # Set the working directory
 WORKDIR /app
